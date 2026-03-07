@@ -6,35 +6,23 @@ import {
   TouchableOpacity,
   Pressable,
   Platform,
-  Dimensions,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { COLORS } from '../constants/theme';
+import TabBar, { TabType } from '../components/TabBar';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+interface MyDealsScreenProps {
+  onTabPress: (tab: TabType) => void;
+}
 
-// Design tokens from Figma
-const COLORS = {
-  background: '#FFFFFF',
-  textPrimary: '#0A2533',
-  textSecondary: '#748189',
-  textMuted: '#9E9E9E',
-  separator: '#EEEEEE',
-  segmentBg: 'rgba(118, 118, 128, 0.12)',
-  tabInactive: 'rgba(31, 48, 83, 0.4)',
-  tabActive: '#1F3053',
-  white: '#FFFFFF',
-  gradientStart: '#1F3053',
-  gradientEnd: '#456BB9',
-};
-
-export default function MyDealsScreen() {
+export default function MyDealsScreen({ onTabPress }: MyDealsScreenProps) {
   const [activeTab, setActiveTab] = useState<'booked' | 'reclaimed'>('booked');
   const bookedCount = 0;
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.container}>
@@ -107,49 +95,7 @@ export default function MyDealsScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Tab bar */}
-        <View style={styles.tabBar}>
-          <View style={styles.tabBarContent}>
-            <TouchableOpacity style={styles.tabItem}>
-              <MaterialCommunityIcons
-                name="account-outline"
-                size={28}
-                color={COLORS.tabInactive}
-              />
-              <Text style={styles.tabLabelInactive}>Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.tabItem}>
-              <FontAwesome6
-                name="compass"
-                size={26}
-                color={COLORS.tabInactive}
-              />
-              <Text style={styles.tabLabelInactive}>Discover</Text>
-            </TouchableOpacity>
-
-            <View style={styles.tabItem}>
-              <LinearGradient
-                colors={[COLORS.gradientStart, COLORS.gradientEnd]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.tabItemActive}
-              >
-                <MaterialCommunityIcons
-                  name="receipt-text-outline"
-                  size={28}
-                  color={COLORS.white}
-                />
-              </LinearGradient>
-              <Text style={styles.tabLabelActive}>My Deals</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Home indicator (iOS) */}
-        {Platform.OS === 'ios' && (
-          <View style={styles.homeIndicator} />
-        )}
+        <TabBar activeTab="mydeals" onTabPress={onTabPress} bottomInset={insets.bottom} />
       </SafeAreaView>
     </View>
   );
@@ -275,67 +221,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.white,
-  },
-  tabBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingTop: 12,
-    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#063336',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  tabBarContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingHorizontal: 24,
-  },
-  tabItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 54,
-  },
-  tabItemActive: {
-    width: 54,
-    height: 44,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  tabLabelInactive: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: COLORS.tabInactive,
-    marginTop: 4,
-  },
-  tabLabelActive: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: COLORS.tabActive,
-    marginTop: 4,
-  },
-  homeIndicator: {
-    position: 'absolute',
-    bottom: 8,
-    left: (SCREEN_WIDTH - 134) / 2,
-    width: 134,
-    height: 5,
-    borderRadius: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
 });

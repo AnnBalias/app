@@ -1,0 +1,21 @@
+export const COLORS = {
+  background: '#FFFFFF',
+  textPrimary: '#0A2533',
+  textSecondary: '#748189',
+  textMuted: '#9E9E9E',
+  separator: '#EEEEEE',
+  segmentBg: 'rgba(118, 118, 128, 0.12)',
+  tabInactive: 'rgba(31, 48, 83, 0.4)',
+  tabActive: '#1F3053',
+  accent: '#1F3053',
+  white: '#FFFFFF',
+  gradientStart: '#1F3053',
+  gradientEnd: '#456BB9',
+  danger: '#FF383C',
+  disabled: '#E2E2E2',
+  overlay: 'rgba(0, 0, 0, 0.5)',
+  // Deal tags gradient
+  dealGradientStart: '#004515',
+  dealGradientEnd: '#359752',
+  categoryActive: 'rgba(70, 107, 185, 0.2)',
+};
