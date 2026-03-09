@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { COLORS } from '../constants/theme';
 import TabBar, { TabType } from '../components/TabBar';
+import RestaurantCard, { RestaurantCardData } from '../components/RestaurantCard';
 
 interface DiscoverScreenProps {
   onTabPress: (tab: TabType) => void;
@@ -28,17 +28,6 @@ interface Category {
   label: string;
 }
 
-interface DealCard {
-  id: string;
-  name: string;
-  category: string;
-  categoryEmoji: string;
-  rating: number;
-  distance: string;
-  deals: string[];
-  imagePlaceholder?: boolean;
-}
-
 const CATEGORIES: Category[] = [
   { id: '1', emoji: '🥗', label: 'Bowls' },
   { id: '2', emoji: '🍔', label: 'Burgers' },
@@ -47,7 +36,7 @@ const CATEGORIES: Category[] = [
   { id: '5', emoji: '🌯', label: 'Durum' },
 ];
 
-const MOCK_DEALS: DealCard[] = [
+const MOCK_DEALS: RestaurantCardData[] = [
   {
     id: '1',
     name: 'Paul Budejovicka',
@@ -74,57 +63,13 @@ export default function DiscoverScreen({ onTabPress }: DiscoverScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isListView, setIsListView] = useState(true);
 
-  const renderDealCard = ({ item }: { item: DealCard }) => (
-    <View style={styles.dealCard}>
-      <View style={styles.dealImageContainer}>
-        <View style={styles.dealImagePlaceholder} />
-        <TouchableOpacity style={styles.loveButton}>
-          <MaterialCommunityIcons
-            name="heart-outline"
-            size={24}
-            color={COLORS.textPrimary}
-          />
-        </TouchableOpacity>
-        <View style={styles.categoryBadge}>
-          <Text style={styles.categoryEmoji}>{item.categoryEmoji}</Text>
-          <Text style={styles.categoryText}>{item.category}</Text>
-        </View>
-      </View>
-
-      <View style={styles.dealInfo}>
-        <View style={styles.dealNameRow}>
-          <View style={styles.dealLogoPlaceholder} />
-          <Text style={styles.dealName}>{item.name}</Text>
-        </View>
-        <View style={styles.dealMeta}>
-          <View style={styles.metaItem}>
-            <MaterialCommunityIcons
-              name="star"
-              size={14}
-              color="#FFCC00"
-            />
-            <Text style={styles.metaText}>{item.rating}</Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="location" size={14} color={COLORS.textPrimary} />
-            <Text style={styles.metaText}>{item.distance}</Text>
-          </View>
-        </View>
-        <View style={styles.dealTags}>
-          {item.deals.map((deal) => (
-            <LinearGradient
-              key={deal}
-              colors={[COLORS.dealGradientStart, COLORS.dealGradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.dealTag}
-            >
-              <Text style={styles.dealTagText}>{deal}</Text>
-            </LinearGradient>
-          ))}
-        </View>
-      </View>
-    </View>
+  const renderDealCard = ({ item }: { item: RestaurantCardData }) => (
+    <RestaurantCard
+      restaurant={item}
+      variant="full"
+      isFavourite={false}
+      onFavouritePress={() => {}}
+    />
   );
 
   return (
@@ -406,117 +351,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 8,
     gap: 16,
-  },
-  dealCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.separator,
-    overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#063336',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  dealImageContainer: {
-    height: 165,
-    backgroundColor: '#E8E8E8',
-    position: 'relative',
-  },
-  dealImagePlaceholder: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#D9D9D9',
-  },
-  loveButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  categoryBadge: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 40,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: COLORS.separator,
-  },
-  categoryEmoji: {
-    fontSize: 18,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: COLORS.textPrimary,
-  },
-  dealInfo: {
-    padding: 16,
-  },
-  dealNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  dealLogoPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: COLORS.separator,
-    marginRight: 8,
-  },
-  dealName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-  dealMeta: {
-    flexDirection: 'row',
-    gap: 24,
-    marginBottom: 12,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  metaText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    opacity: 0.85,
-  },
-  dealTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  dealTag: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 40,
-  },
-  dealTagText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.white,
   },
 });

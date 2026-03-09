@@ -21,41 +21,6 @@ export default function TabBar({ activeTab, onTabPress, bottomInset = 12 }: TabB
       <View style={styles.tabBarContent}>
         <TouchableOpacity
           style={styles.tabItem}
-          onPress={() => onTabPress('profile')}
-          activeOpacity={0.7}
-        >
-          {activeTab === 'profile' ? (
-            <LinearGradient
-              colors={[COLORS.gradientStart, COLORS.gradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.tabItemActive}
-            >
-              <MaterialCommunityIcons
-                name="account"
-                size={28}
-                color={COLORS.white}
-              />
-            </LinearGradient>
-          ) : (
-            <MaterialCommunityIcons
-              name="account-outline"
-              size={28}
-              color={COLORS.tabInactive}
-            />
-          )}
-          <Text
-            style={[
-              styles.tabLabel,
-              activeTab === 'profile' ? styles.tabLabelActive : styles.tabLabelInactive,
-            ]}
-          >
-            Profile
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
           onPress={() => onTabPress('discover')}
           activeOpacity={0.7}
         >
@@ -117,6 +82,41 @@ export default function TabBar({ activeTab, onTabPress, bottomInset = 12 }: TabB
             ]}
           >
             My Deals
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => onTabPress('profile')}
+          activeOpacity={0.7}
+        >
+          {activeTab === 'profile' ? (
+            <LinearGradient
+              colors={[COLORS.gradientStart, COLORS.gradientEnd]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.tabItemActive}
+            >
+              <MaterialCommunityIcons
+                name="account"
+                size={28}
+                color={COLORS.white}
+              />
+            </LinearGradient>
+          ) : (
+            <MaterialCommunityIcons
+              name="account-outline"
+              size={28}
+              color={COLORS.tabInactive}
+            />
+          )}
+          <Text
+            style={[
+              styles.tabLabel,
+              activeTab === 'profile' ? styles.tabLabelActive : styles.tabLabelInactive,
+            ]}
+          >
+            Profile
           </Text>
         </TouchableOpacity>
       </View>

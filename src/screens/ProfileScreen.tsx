@@ -15,15 +15,25 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { COLORS } from '../constants/theme';
 import TabBar, { TabType } from '../components/TabBar';
+import RestaurantCard, { RestaurantCardData } from '../components/RestaurantCard';
 
 interface ProfileScreenProps {
+  favourites: RestaurantCardData[];
   onEditProfile: () => void;
   onTabPress: (tab: TabType) => void;
+  onSeeAllFavourites: () => void;
+  onRemoveFavourite: (id: string) => void;
 }
 
-export default function ProfileScreen({ onEditProfile, onTabPress }: ProfileScreenProps) {
+export default function ProfileScreen({
+  favourites,
+  onEditProfile,
+  onTabPress,
+  onSeeAllFavourites,
+  onRemoveFavourite,
+}: ProfileScreenProps) {
   const insets = useSafeAreaInsets();
-  const hasFavourites = false;
+  const hasFavourites = favourites.length > 0;
 
   return (
     <View style={styles.container}>
@@ -101,15 +111,27 @@ export default function ProfileScreen({ onEditProfile, onTabPress }: ProfileScre
           {/* Favourites section */}
           <View style={styles.favouritesHeader}>
             <Text style={styles.favouritesTitle}>Favourites</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onSeeAllFavourites}>
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
 
           {hasFavourites ? (
-            <View style={styles.favouritesList}>
-              {/* Favourite items would go here */}
-            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.favouritesList}
+            >
+              {favourites.map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.id}
+                  restaurant={restaurant}
+                  variant="horizontal"
+                  isFavourite
+                  onFavouritePress={() => onRemoveFavourite(restaurant.id)}
+                />
+              ))}
+            </ScrollView>
           ) : (
             <View style={styles.emptyFavourites}>
               <View style={styles.emptyIconWrapper}>
@@ -290,7 +312,8 @@ const styles = StyleSheet.create({
     color: COLORS.tabActive,
   },
   favouritesList: {
-    minHeight: 100,
+    paddingBottom: 8,
+    paddingRight: 16,
   },
   emptyFavourites: {
     alignItems: 'center',
