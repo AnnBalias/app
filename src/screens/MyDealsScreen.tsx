@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,13 +15,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../constants/theme';
 import TabBar, { TabType } from '../components/TabBar';
+import ReclaimedDealCard, { ReclaimedDealData } from '../components/ReclaimedDealCard';
 
 interface MyDealsScreenProps {
   onTabPress: (tab: TabType) => void;
+  reclaimedDeals: ReclaimedDealData[];
+  onRateDeal: (dealId: string, initialRating: number) => void;
+  activeTab: 'booked' | 'reclaimed';
+  onActiveTabChange: (tab: 'booked' | 'reclaimed') => void;
 }
 
-export default function MyDealsScreen({ onTabPress }: MyDealsScreenProps) {
-  const [activeTab, setActiveTab] = useState<'booked' | 'reclaimed'>('booked');
+export default function MyDealsScreen({ onTabPress, reclaimedDeals, onRateDeal, activeTab, onActiveTabChange }: MyDealsScreenProps) {
   const bookedCount = 0;
   const insets = useSafeAreaInsets();
 
@@ -45,7 +50,7 @@ export default function MyDealsScreen({ onTabPress }: MyDealsScreenProps) {
           <View style={styles.segmentedControl}>
             <Pressable
               style={[styles.segment, activeTab === 'booked' && styles.segmentActive]}
-              onPress={() => setActiveTab('booked')}
+              onPress={() => onActiveTabChange('booked')}
             >
               <Text
                 style={[
@@ -59,7 +64,7 @@ export default function MyDealsScreen({ onTabPress }: MyDealsScreenProps) {
             <View style={styles.segmentDivider} />
             <Pressable
               style={[styles.segment, activeTab === 'reclaimed' && styles.segmentActive]}
-              onPress={() => setActiveTab('reclaimed')}
+              onPress={() => onActiveTabChange('reclaimed')}
             >
               <Text
                 style={[
@@ -67,33 +72,64 @@ export default function MyDealsScreen({ onTabPress }: MyDealsScreenProps) {
                   activeTab === 'reclaimed' && styles.segmentTextActive,
                 ]}
               >
-                Reclaimed
+                Reclaimed ({reclaimedDeals.length})
               </Text>
             </Pressable>
           </View>
         </View>
 
-        {/* Empty state */}
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIconWrapper}>
-            <MaterialCommunityIcons
-              name="receipt-text-outline"
-              size={72}
-              color={COLORS.textMuted}
-            />
+        {/* Content */}
+        {activeTab === 'booked' && (
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIconWrapper}>
+              <MaterialCommunityIcons
+                name="receipt-text-outline"
+                size={72}
+                color={COLORS.textMuted}
+              />
+            </View>
+            <Text style={styles.emptyTitle}>No booked deals yet</Text>
+            <TouchableOpacity activeOpacity={0.8} style={styles.bookButton}>
+              <LinearGradient
+                colors={[COLORS.gradientStart, COLORS.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.bookButtonGradient}
+              >
+                <Text style={styles.bookButtonText}>Book a Deal</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.emptyTitle}>No booked deals yet</Text>
-          <TouchableOpacity activeOpacity={0.8} style={styles.bookButton}>
-            <LinearGradient
-              colors={[COLORS.gradientStart, COLORS.gradientEnd]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.bookButtonGradient}
-            >
-              <Text style={styles.bookButtonText}>Book a Deal</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        )}
+
+        {activeTab === 'reclaimed' && (
+          <ScrollView
+            style={styles.reclaimedList}
+            contentContainerStyle={[styles.reclaimedListContent, { paddingBottom: 120 + insets.bottom }]}
+            showsVerticalScrollIndicator={false}
+          >
+            {reclaimedDeals.length === 0 ? (
+              <View style={[styles.emptyState, styles.emptyStateInScroll]}>
+                <View style={styles.emptyIconWrapper}>
+                  <MaterialCommunityIcons
+                    name="receipt-text-outline"
+                    size={72}
+                    color={COLORS.textMuted}
+                  />
+                </View>
+                <Text style={styles.emptyTitle}>No reclaimed deals yet</Text>
+              </View>
+            ) : (
+              reclaimedDeals.map((deal) => (
+                <ReclaimedDealCard
+                  key={deal.id}
+                  deal={deal}
+                  onRatePress={(rating) => onRateDeal(deal.id, rating)}
+                />
+              ))
+            )}
+          </ScrollView>
+        )}
 
         <TabBar activeTab="mydeals" onTabPress={onTabPress} bottomInset={insets.bottom} />
       </SafeAreaView>
@@ -184,12 +220,23 @@ const styles = StyleSheet.create({
     height: 16,
     backgroundColor: 'rgba(142, 142, 147, 0.5)',
   },
+  reclaimedList: {
+    flex: 1,
+  },
+  reclaimedListContent: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+  },
   emptyState: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
     paddingBottom: 120,
+  },
+  emptyStateInScroll: {
+    minHeight: 300,
+    flexGrow: 1,
   },
   emptyIconWrapper: {
     width: 90,
